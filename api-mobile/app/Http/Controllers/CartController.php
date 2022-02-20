@@ -66,11 +66,27 @@ class CartController extends Controller
             return json_encode(['message' => 'Cart Update Fail'], 404);
         }
     }
+
     public function deleteCart($id)
     {
         $cart = Cart::find($id);
         if ($cart != null) {
             $cart->delete();
+            return json_encode(['message' => 'Cart deleted successfully'], 200);
+        } else {
+            return json_encode(['message' => 'Cart not found'], 500);
+        }
+    }
+
+    public static function deleteCartByAccount($accId)
+    {
+
+        $cart = Cart::where('user_id', $accId)->get();
+
+        if (!$cart->isEmpty()) {
+            foreach ($cart as $item) {
+                $item->delete();
+            }
             return json_encode(['message' => 'Cart deleted successfully'], 200);
         } else {
             return json_encode(['message' => 'Cart not found'], 500);

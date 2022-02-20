@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function index()
     {
         //Sản phẩm bán chạy
-        $bestSelling=DB::select('select products.*, SUM(invoice_details.Quantity) as so_luong_ban_duoc
+        $bestSelling = DB::select('select products.*, SUM(invoice_details.Quantity) as so_luong_ban_duoc
         FROM products, invoice_details
         WHERE products.Id=invoice_details.ProductId
         GROUP BY products.Id
@@ -47,7 +47,6 @@ class HomeController extends Controller
         WHERE MONTH(invoices.IssueDate)=MONTH(NOW()) and YEAR(invoices.IssueDate)=YEAR(NOW())');
         //dd($revenuePerMonth);
         //dd($revenuePerDay);
-        return view('pages.manage.dashboard',compact('bestSelling','cakePerDay','invPerDay','potential','revenuePerDay','revenuePerMonth'));
+        return view('pages.manage.dashboard', compact('bestSelling', 'cakePerDay', 'invPerDay', 'potential', 'revenuePerDay', 'revenuePerMonth'));
     }
-
 }

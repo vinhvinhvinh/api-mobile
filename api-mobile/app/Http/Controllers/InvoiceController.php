@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
+use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Account;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-  public function index(){
+  public function index()
+  {
     $invoices = Invoice::all();
     return view('pages.manage.invoice', compact('invoices'));
   }
@@ -50,36 +53,49 @@ class InvoiceController extends Controller
   public function findInvoice($id)
   {
     $invoice = Invoice::find($id);
-    $invoiceDetail = InvoiceDetail::where('InvoiceId',$id)->get();
-    return view('pages.update.update_invoice',compact('invoice','invoiceDetail'));
+    $invoiceDetail = InvoiceDetail::where('InvoiceId', $id)->get();
+    return view('pages.update.update_invoice', compact('invoice', 'invoiceDetail'));
   }
   public function addInvoice(Request $request)
   {
+    //tìm user đặt hàng 
+    $payUser = User::where('id', $request->userId)->first();
+
+
+    $datetime = Date('Ymdhms');
+    $countAllInv = Invoice::all()->count() + 1;
+    $finalId = 'INV' . $datetime . $countAllInv;
+    //ok xin lỗi
     DB::beginTransaction();
     $invoice = new Invoice();
-    $count = Invoice::count();
-    if ($count < 9) {
-      $id = 'Invoice' . '00' . ($count + 1);
-    } else if ($count < 99) {
-      $id = 'Invoice' . '0' . ($count + 1);
-    } else {
-      $id = 'Invoice' . ($count + 1);
-    }
-    $invoice->Id = $id;
-    $invoice->user_id = $request->user_id;
+
+    // $count = Invoice::count();
+    // if ($count < 9) {
+    //   $id = 'INVOICE' . '00' . ($count + 1);
+    // } else if ($count < 99) {
+    //   $id = 'INVOICE' . '0' . ($count + 1);
+    // } else {
+    //   $id = 'INVOICE' . ($count + 1);
+    // }
+    $invoice->Id = $finalId;
+    $invoice->user_id = $request->userId;
     $invoice->issueDate = Carbon::now('Asia/Ho_Chi_Minh');
+    $invoice->PhoneShipping = ($request->PhoneShipping != null ? $request->PhoneShipping : $payUser->Phone);
+    $invoice->ShippingAddress = ($request->ShippingAddress != null ? $request->ShippingAddress : $payUser->Address1);
     $invoice->Total = 0;
     $invoice->Discount = 0;
-    $invoice->order_statuses_id = $request->order_statuses_id;
-    $invoice->payments_id = $request->payments_id;
+    $invoice->order_statuses_id = 1;
+    $invoice->payments_id = 1;
     $lineItem = $request->lineItem;
     $total = 0;
     $invoice->save();
     foreach ($lineItem as $item) {
-      $check_stock = InvoiceDetailController::update_stock($item['Quantity'], $item['id']);
-      $total += $item['unitprice'] * $item['Quantity'];
+      //Kiểm tra sô lượng tổn kho
+      $check_stock = InvoiceDetailController::update_stock($item['Quantity'], $item['CakeId']);
+      $total += $item['Price'] * $item['Quantity'];
       if ($check_stock['status']) {
-        InvoiceDetailController::addInvoiceDetail($invoice->Id, $item['Quantity'], (int)$item['unitprice'], $item['id']);
+        //Thêm chi tiết đơn hàng
+        InvoiceDetailController::addInvoiceDetail($invoice->Id, $item['Quantity'], (int)$item['Price'], $item['CakeId']);
       } else {
         DB::rollBack();
         return response()->json([
@@ -87,6 +103,8 @@ class InvoiceController extends Controller
         ]);
       }
     }
+    //Xóa cart của user Id
+    CartController::deleteCartByAccount($request->userId);
     $invoice->Total = $total;
     $invoice->save();
     DB::commit();

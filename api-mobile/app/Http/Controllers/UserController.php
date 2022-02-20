@@ -335,4 +335,19 @@ class UserController extends Controller
             'message' => 'Xóa thành công',
         ]);
     }
+    public function changePassword(Request $request, $accId)
+    {
+        $user = User::where('Id', $accId)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy user'], 400);
+        }
+
+        if (Hash::check($request->OldPassword, $user->Password)) {
+            $user->Password = Hash::make($request->NewPassword);
+            $user->save();
+            return response()->json($user, 200);
+        } else {
+            return response()->json(['message' => 'Mật khẩu cũ không đúng'], 400);
+        }
+    }
 }
