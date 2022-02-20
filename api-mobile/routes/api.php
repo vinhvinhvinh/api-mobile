@@ -62,7 +62,7 @@ Route::group(['prefix' => 'products'], function () {
     Route::post('/add',  [ProductController::class, 'add']);
     Route::put('/update/{id}', [ProductController::class, 'update']);
     Route::post('/delete/{id}', [ProductController::class, 'delete']);
-    Route::get('/search/{key}',[ProductController::class,'search']);
+    Route::get('/search/{key}', [ProductController::class, 'search']);
 });
 Route::get('/products-bestselling', [ProductController::class, 'ProductBestSelling']);
 
@@ -74,6 +74,7 @@ Route::group(['prefix' => 'carts'], function () {
     Route::post('/create', [CartController::class, 'addCart']);
     Route::put('/update/{id}', [CartController::class, 'updateCartQuantity']);
     Route::delete('/delete/{id}', [CartController::class, 'deleteCart']);
+    Route::delete('/deleteByAcc/{id}', [CartController::class, 'deleteCartByAccount']);
 });
 
 Route::group(['prefix' => 'invoices'], function () {
@@ -120,6 +121,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/add',  [UserController::class, 'addUser']);
     Route::put('/updateByAdmin/{id}', [UserController::class, 'userUpdateAdmin']);
     Route::put('/updateByUser/{id}', [UserController::class, 'userUpdateUser']);
+    Route::put('/changePassword/{id}', [UserController::class, 'changePassword']);
     Route::delete('/delete/{id}', [UserController::class, 'deleteUser']);
 });
 
