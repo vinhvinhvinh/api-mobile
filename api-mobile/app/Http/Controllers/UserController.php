@@ -57,7 +57,7 @@ class UserController extends Controller
             ]);
         }
 
-        //Kiểm tra  nhập tên 
+        //Kiểm tra  nhập tên
         if (empty($request->Fullname)) {
             return json_encode([
                 'success' => false,
@@ -171,7 +171,7 @@ class UserController extends Controller
             ]);
         }
 
-        //Kiểm tra  nhập tên 
+        //Kiểm tra  nhập tên
         if (empty($request->Fullname)) {
             return json_encode([
                 'success' => false,
@@ -250,16 +250,7 @@ class UserController extends Controller
                 'message' => 'Chưa nhập Email',
             ]);
         }
-
-        $existingUser = User::where('Email', $request->Email)->count();
-        if ($existingUser > 0) {
-            return json_encode([
-                'success' => false,
-                'message' => 'Email đã tồn tại'
-            ]);
-        }
-
-        //Kiểm tra  nhập tên 
+        //Kiểm tra  nhập tên
         if (empty($request->Fullname)) {
             return json_encode([
                 'success' => false,
