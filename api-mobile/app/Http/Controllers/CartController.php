@@ -40,20 +40,20 @@ class CartController extends Controller
     }
     public function addCart(Request $request)
     {
+        $cart = Cart::where('user_id', $request->userId)
+            ->where('ProductId', $request->ProductId)->first();
+        if ($cart == null) {
+            $cart = new Cart;
+            $cart->user_id = $request->userId;
+            $cart->ProductId = $request->ProductId;
+            $cart->Quantity = $request->Quantity;
+            $cart->save();
+        } else {
+            $cart->Quantity += $request->Quantity;
+            $cart->save();
+        }
 
-        $datetime = Date('Ymdhms');
-        $countAllCart = Cart::all()->count() + 1;
-        $originalId = $countAllCart;
-        $finalId = 'CART' . $datetime . $originalId;
-
-
-        $cart = new Cart;
-        $cart->Id = $finalId;
-        $cart->AccountId = $request->AccountId;
-        $cart->ProductId = $request->ProductId;
-        $cart->Quantity = $request->Quantity;
-        $cart->save();
-        return json_encode($cart);
+        return json_encode($cart, 200);
     }
     public function updateCart(Request $request, $id)
     {
