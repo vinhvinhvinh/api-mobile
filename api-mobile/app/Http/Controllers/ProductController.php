@@ -209,12 +209,12 @@ class ProductController extends Controller
         return $amount;
     }
 
-    public static function search($key)
-    {
-        $searchProducts = DB::table('products')->select('products.*')
-            ->join('product_types', 'product_types.Id', 'products.ProductTypeId')
-            ->where('products.Name', 'like', '%' . $key . '%')->orWhere('products.Description', 'like', '%' . $key . '%')->orWhere('product_types.Name', 'like', '%' . $key . '%')
-            ->get();
+    public static function search($key){
+        $searchProducts=DB::table('products')->select('products.*')
+        ->join('product_types','product_types.Id','products.ProductTypeId')
+        ->where('products.Name', 'like','%'.$key.'%')->orWhere('product_types.Name', 'like','%'.$key.'%')
+        //->orWhere('products.Description', 'like','%'.$key.'%')
+        ->get();
         return response()->json(
             $searchProducts,
             200
