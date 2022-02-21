@@ -22,20 +22,17 @@ class InvoiceDetailController extends Controller
     public static function update_stock($quantity, $product_id)
     {
         $product = Product::find($product_id);
-        if($quantity > $product->Stock)
-        {
-           return [
-               'status' => false,
-               'product' => $product
+        if ($quantity > $product->Stock) {
+            return [
+                'status' => false,
+                'product' => $product
             ];
-        }
-        else
-        {
+        } else {
             $product->Stock -= $quantity;
             $product->save();
             return [
                 'status' => true,
-             ];
+            ];
         }
     }
     public static function addInvoiceDetail($invoiceId, $quantity, $unitprice, $product_id)
@@ -47,7 +44,6 @@ class InvoiceDetailController extends Controller
         $invoiceDetail->Unitprice = (int)$unitprice;
         $invoiceDetail->Intomoney = (int)$quantity * $unitprice;
         $invoiceDetail->save();
-
     }
     public function deleteInvoiceDetail($id)
     {

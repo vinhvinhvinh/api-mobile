@@ -111,7 +111,7 @@ class ProductController extends Controller
 
     public function getProductDetail($id)
     {
-        $data = Product::find($id)->join('product_types','products.ProductTypeId','product_types.Id')->select('products.*','product_types.Name as TypeName' )->get();
+        $data = Product::find($id)->join('product_types', 'products.ProductTypeId', 'product_types.Id')->select('products.*', 'product_types.Name as TypeName')->get();
         if (empty($data)) {
             return json_encode([
                 'success' => false,
@@ -216,7 +216,8 @@ class ProductController extends Controller
         //->orWhere('products.Description', 'like','%'.$key.'%')
         ->get();
         return response()->json(
-            $searchProducts,200
+            $searchProducts,
+            200
         );
     }
     // public static function search($value){
