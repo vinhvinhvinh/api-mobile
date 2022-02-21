@@ -100,7 +100,7 @@ class InvoiceController extends Controller
   //     $inv=Invoice::find($id);
   //     if($inv!=null)
   //     {
-  //         $inv->AccountId=$request->AccountId;    
+  //         $inv->AccountId=$request->AccountId;
   //         $inv->Total=$request->Total;
   //         $inv->ShippingAddress=$request->ShippingAddress;
   //         $inv->PhoneShipping=$request->PhoneShipping;
@@ -123,5 +123,14 @@ class InvoiceController extends Controller
     } else {
       return json_encode(['message' => 'Invoice not found'], 404);
     }
+  }
+
+  public function invoicesByAccountIdAndStatus($accountId,$status){
+      $lstInvoice= Invoice::where('order_statuses_id',$status)
+      ->join('order_statuses','invoices.order_statuses_id','order_statuses.id')
+      ->join('invoice_details','invoices.id','invoice_details.InvoiceId')
+      ->join('products','invoice_details.ProductId','products.Id')
+      ->where('user_id',$accountId)->select('invoices.*','invoice_details.Quantity','products.Id','products.Image','products.Name as productName','products.Price','order_statuses.Id','order_statuses.Name as trangthai')->get();
+      return json_decode($lstInvoice);
   }
 }

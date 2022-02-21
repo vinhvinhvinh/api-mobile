@@ -79,7 +79,7 @@ class ProductController extends Controller
 
         $prodByFav = DB::table('products')
             ->join('favorites', 'products.Id', '=', 'favorites.ProductId')
-            ->where('favorites.user_id', $accountId)->get();
+            ->where('favorites.user_id', $accountId)->select('products.*')->get();
 
         if (($prodByFav)->isEmpty()) {
             return response()->json([
@@ -212,7 +212,8 @@ class ProductController extends Controller
     public static function search($key){
         $searchProducts=DB::table('products')->select('products.*')
         ->join('product_types','product_types.Id','products.ProductTypeId')
-        ->where('products.Name', 'like','%'.$key.'%')->orWhere('products.Description', 'like','%'.$key.'%')->orWhere('product_types.Name', 'like','%'.$key.'%')
+        ->where('products.Name', 'like','%'.$key.'%')->orWhere('product_types.Name', 'like','%'.$key.'%')
+        //->orWhere('products.Description', 'like','%'.$key.'%')
         ->get();
         return response()->json(
             $searchProducts,200

@@ -83,6 +83,7 @@ Route::group(['prefix' => 'invoices'], function () {
     Route::post('/create', [InvoiceController::class, 'addInvoice']);
     //Route::put('/update/{id}', [InvoiceController::class, 'updateInvoice']);
     Route::delete('/delete/{id}', [InvoiceController::class, 'deleteInvoice']);
+    Route::get('/{accountId}/{status}',[InvoiceController::class,'invoicesByAccountIdAndStatus']);
 });
 
 Route::group(['prefix' => 'invoicedetail'], function () {
