@@ -345,7 +345,12 @@ class UserController extends Controller
         if (Hash::check($request->OldPassword, $user->Password)) {
             $user->Password = Hash::make($request->NewPassword);
             $user->save();
-            return response()->json($user, 200);
+            $token = $user->createToken('ShopCakeToken')->plainTextToken;
+            $response = [
+                'user' => $user,
+                'user_token' => $token,
+            ];
+            return response($response, 200);
         } else {
             return response()->json(['message' => 'Mật khẩu cũ không đúng'], 400);
         }
