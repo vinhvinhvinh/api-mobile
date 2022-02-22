@@ -21,8 +21,8 @@ class FavoriteController extends Controller
     // //Lọc sản phẩm yêu thích theo Id account
     public function findFavoriteByAccountId($accountId)
     {
-        $favorite = Favorite::where('user_id',$accountId)->get();
-        return json_encode($favorite);
+        $data = Favorite::join('products','products.Id','favorites.ProductId')->where('user_id','=',$accountId)->select('favorites.*','products.Name','products.Price','products.Image')->get();
+        return json_encode($data);
     }
 
     public function addFavorite(Request $request)
@@ -90,22 +90,16 @@ class FavoriteController extends Controller
         ]);
     }
 
-    //xóa bình luận
+
     public function deleteFavorite($id)
     {
 
-        $favorite = Favorite::find($id);
-        if (empty($favorite)) {
-            return json_encode([
-                'success' => false,
-                'message' => 'Không tìm thấy bình luận',
-            ]);
+        $fav = Favorite::find($id);
+        if ($fav != null) {
+            $fav->delete();
+            return json_encode(['message' => 'Favorite deleted successfully'], 200);
+        } else {
+            return json_encode(['message' => 'Favorite not found'], 500);
         }
-
-        $favorite->delete();
-        return json_encode([
-            'success' => true,
-            'message' => 'Xóa thành công',
-        ]);
     }
 }
